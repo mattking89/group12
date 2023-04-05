@@ -1,0 +1,526 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <title>Memory Game</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1200">
+  <script src="https://distill.pub/template.v2.js"></script>
+
+  <style id="distill-article-specific-styles">
+ .card {
+
+        position: relative;
+        display: inline-block;
+    
+    }
+    .card .img-top {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 99;
+    }
+    .card:hover .img-top {
+        display: inline;
+    }
+    .subgrid {
+  grid-column: screen; 
+  display: grid; 
+  grid-template-columns: inherit;
+  grid-template-rows: inherit;
+  grid-column-gap: inherit;
+  grid-row-gap: inherit;
+}
+
+d-figure.base-grid {
+  grid-column: screen;
+  background: hsl(0, 0%, 97%);
+  padding: 20px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+d-figure {
+  margin-bottom: 1em;
+  position: relative;
+}
+
+d-figure > figure {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.shaded-figure {
+  background-color: hsl(0, 0%, 97%);
+  border-top: 1px solid hsla(0, 0%, 0%, 0.1);
+  border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
+  padding: 30px 0;
+}
+
+.pointer {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  top: 26px;
+  left: -48px;
+}
+
+div#observablehq {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button {
+  font-family : inherit;
+  font-size: 1em;
+}
+
+/* Alignment of KaTeX. */
+#gnn-models span.katex-display {
+  margin: 0.5em 0 0.5em 0em;
+}
+
+@media (max-width: 1000px) {
+  d-contents {
+    justify-self: start;
+    align-self: start;
+    grid-column-start: 2;
+    grid-column-end: 6;
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    padding-left: 0.25em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (min-width: 1000px) {
+  d-contents {
+    align-self: start;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    justify-self: end;
+    padding-right: 3em;
+    padding-left: 2em;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (min-width: 1180px) {
+  d-contents {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    justify-self: end;
+    padding-right: 3em;
+    padding-left: 2em;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+d-contents nav h3 {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+d-contents nav a {
+  color: rgba(0, 0, 0, 0.8);
+  border-bottom: none;
+  text-decoration: none;
+}
+
+d-contents li {
+  list-style-type: none;
+}
+
+d-contents ul {
+  padding-left: 1em;
+}
+
+d-contents nav ul li {
+  margin-bottom: 0.25em;
+}
+
+d-contents nav a:hover {
+  text-decoration: underline solid rgba(0, 0, 0, 0.6);
+}
+
+d-contents nav ul {
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+d-contents nav > div {
+  display: block;
+  outline: none;
+  margin-bottom: 0.5em;
+}
+
+d-contents nav > div > a {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+d-contents nav > div > a:hover, d-contents nav > ul > li > a:hover {
+  text-decoration: none;
+}
+
+input[type="radio"] {
+  vertical-align: unset !important;
+}
+
+.math-details {
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-bottom: 0em;
+  padding-top: 1em;
+  margin-bottom: 1em;
+}
+
+#customers {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
+}
+  </style>
+</head>
+
+<body>
+  
+  <d-front-matter>
+    <script type="text/json">
+      {
+    "title": "Memory Game",
+    "description": "4474 Final Report",
+    "authors": [
+        {
+            "author": "Mary Olaleye",
+            "affiliation": "GitHub Profile",
+            "affiliationURL": "https://research.google/"
+        },
+        {
+           "author": "Matthew King",
+            "affiliation": "GitHub Profile",
+            "affiliationURL": "https://research.google/"
+        },
+{
+           "author": "Nick Baesso",
+            "affiliation": "GitHub Profile",
+            "affiliationURL": "https://research.google/"
+        },
+        {
+            "author": "Hadi Miri",
+            "affiliation": "GitHub Profile",
+            "affiliationURL": "https://research.google/"
+        },
+{
+            "author": "Jaylen Edwards",
+            "affiliation": "GitHub Profile",
+            "affiliationURL": "https://research.google/"
+        }
+    ],
+    "katex": {
+        "delimiters": [
+            {
+                "left": "$",
+                "right": "$",
+                "display": false
+            },
+            {
+                "left": "$$",
+                "right": "$$",
+                "display": true
+            }
+        ]
+    }
+}
+    </script>
+  </d-front-matter>
+
+  <d-title>
+    <h1>Memory Game</h1>
+    <p>4474 Final Report</p>
+  </d-title>
+
+  <d-article>
+    <d-contents>
+      <nav class="l-text figcaption">
+        <h3>Contents</h3>
+        <div><a href="#introduction">Executive Summary</a></div>
+        <div><a href="#challenges">Navigational Map of Meory Game</a></div>
+        <ul>
+          <li><a href="#main-menu">Main Menu</a></li>
+          <li><a href="#main-game">Main Game</a></li>
+          <li><a href="#settings">Settings</a></li>
+          <li><a href="#leadership-board">Leadership Board</a></li>
+          <li><a href="#help-page">Help Page</a></li>
+        </ul>
+        <div><a href="#design-principles">Design Principles</a></div>
+        <div><a href="#interaction">Interaction</a></div>
+        <div><a href="#evaluation">Final Heuristics Evaluation Of System</a></div>
+        <div><a href="#recommendations">Recommendations</a></div>
+        
+         
+        </ul>
+      </nav>
+    </d-contents>
+    <div>
+  <h2 id="challenges">
+Executive Summary   </h2>
+      <p><em>
+        This report is based on the redesign of a memory game. As you read this report feel free to take at look at the CodePen which has the original
+        <a href="https://codepen.io/beumsk/pen/xdoKjX?editors=1112">Memory Game</a>
+        <d-cite key="gnn-intro"></d-cite>
+      </em></p>
+      <p id="introduction">
+       One example of a simple game that could be improved upon for a better user experience is a basic "memory matching" game where the player flips over cards to find matching pairs. Through user testing and iteration, our project will aim to enhance the overall user experience by addressing areas of improvement such as UI/UX design, game mechanics, and user engagement. The final deliverable will be a fully functional memory game that offers a satisfying and enjoyable user experience. 
+
+      </p>
+      <p>
+      <b>Original System:</b>
+A memory matching game is a game where the user gets to choose a theme that incorporates pictures related to it and start matching while a timer keeps track of the time the user takes to complete matching the pictures in the grid. The objective of this project is to design and develop a memory game application that prioritizes minimal user experience, with a focus on simplicity and ease of use. The original game uses a 4x5 grid with a pop up menu at the beginning for the user to choose a theme from. After that, the timer would start increasing (in seconds) which is presented at the bottom of the grid. Also, there is a points counter that increments by 10 points for every successful match. The title of the game is presented right above the grid in big font.
+
+       </p>
+ <p class="shaded-figure" style="padding-left: 1em;">
+        <b>Tip: Hover over the image below to see what a match looks like</b>
+        
+      </p>
+ <div class="card">
+<img src="original-game.png" style="width:700px; height: 670px"class="img-top"alt="Original Memory Game 1">
+<img src="original-game1.png"    style="width:700px;"alt="Original Memory Game 2">        
+    </div>
+        
+    </div>
+    
+    <b>Target Audience:</b>
+Anyone who enjoys playing fast paced casual games should enjoy playing this game. The rules are simple and there is next to no barrier of entry. Additional modes can account for people who prefer different play styles.
+
+       </p>
+<p>
+<b>Final Redesign:</b>
+
+
+       </p>
+
+
+
+    <h2 id="challenges">
+Navigational Map of Memory Game    </h2>
+
+    <h3 id="main-menu">
+Main Menu
+    </h3>
+     
+
+    <h3 id="main-game">
+Main Game
+    </h3>
+   
+
+
+    <h3 id="settings">
+      Settings
+    </h3>
+      <p>
+        
+      </p>
+      <p>
+      </p>
+ <h3 id="leadership-board">
+      Leadership Board
+    </h3>
+      <p>
+        
+      </p>
+      <p>
+      </p>
+ <h3 id="help-page">
+      Help Page
+    </h3>
+      <p>
+        
+      </p>
+      <p>
+      </p>
+
+
+
+    <h2 id="design-principles">
+Design Principles
+    </h2>
+      <p>
+        There are many useful problems that can be formulated over graphs:
+      </p>
+       
+      
+    <h2 id="interaction">
+Interaction
+    </h2>
+    <p>
+
+      <h3>Interaction Metaphors</h3>
+
+      <p> 
+        The game utilizes the innovative concept of using a hand as a replacement for the traditional mouse cursor. This unique approach creates a highly immersive experience for the user, as it mimics the sensation of physically interacting with the game's visual components.
+        
+        By using this interaction principle, the user's hand appears to reach into the game's user interface and manipulate the cards as if they were physically present. This creates a highly engaging and dynamic experience that encourages the user to explore and experiment with the game's features.
+        
+        The presence of the hand cursor has an explicit value, as it not only serves as an advertisement for the available actions, but it also provides a clear indication of the user's current mode of interaction. This helps to reduce confusion and increases the user's confidence in their ability to interact with the game's interface.
+        </p> <p> Furthermore, the use of the hand cursor as an explicit advertisement for available actions aligns with the principles of user-centered design, which emphasizes the importance of providing clear and explicit feedback to users. By explicitly advertising the available actions, the game ensures that users are able to quickly and easily identify opportunities for interaction and are encouraged to explore and experiment with the game's features.
+        
+        The game is reactive - The system is designed to be passive and waits for user action before reacting. This means that the game responds to user input in real-time, providing an instant and seamless experience.
+        </p>
+
+        <table ID="#customers">
+          <tr>
+            <th>Micro-Level</th>
+            <th>Description</th>
+            <th>Macro-Level</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>Clicking on cards</td>
+            <td>In a memory game, the user clicks on cards to flip them over and reveal their content. This microlevel interaction allows the user to actively engage with the game and progress through the levels.</td>
+            <td>Finding a match </td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Visual and audio cues</td>
+            <td>When a correct match occurs the cards are highlighted green and a positive sound like “yay” is played by the game. This audio feedback can help the user understand that they have made a mistake and encourage them to pay closer attention to the cards they select in the future.This interaction can give the user a sense of satisfaction.</td>
+            <td>Feedback</td>
+            <td>The micro level interactions allow feedback to be given to the players to show them the progress they have made in the game.</td>
+          </tr>
+          <tr>
+            <td>Timer </td>
+            <td>The use of a timer in a memory game is another example of a microlevel interaction. It adds an element of challenge and urgency to the game, requiring the user to make quick and accurate decisions within a limited amount of time.</td>
+            <td>Increasing or decreasing game difficult</td>
+            <td>The game may offer different game modes, such as timed or untimed, or different themes or difficulty levels. This macro level interaction allows the user to customize their experience and provides a sense of variety and replayability.</td>
+          </tr>
+          <tr>
+            <td>Scoring</td>
+            <td>Scoring is another example of a microlevel interaction in a memory game. The user is awarded points for each correct match, providing a sense of accomplishment and incentivizing them to continue playing.</td>
+            <td>Leadership Board </td>
+            <td>The game may keep track of the user's high score, providing a sense of competition and encouraging them to improve their performance. This macro level interaction defines the overall goal of the game and provides motivation for the user to continue playing.</td>
+          </tr>
+          <tr>
+            <td>Animations of Cards</td>
+            <td>Yoshi Tannamuri</td>
+            <td>Canada</td>
+          </tr>
+         
+        </table>
+    
+    </p>
+    <p>
+      
+    </p>
+    
+  
+
+    <h2 id="evaluation">
+Final Heuristics Evaluation Of System    </h2>
+   
+
+    <h2 id="recommendations">
+Recommedations
+    </h2>
+      
+      <p class="shaded-figure" style="padding-left: 1em;">
+        <b>Key Idea:</b>
+        
+      </p>
+      
+      <script src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"></script>
+    
+
+  <d-appendix id="appendix">
+    
+    <d-footnote-list></d-footnote-list>
+
+   
+    <p>
+
+    </p>
+    <p>
+      We would like to acknowledge the following Distill articles for inspiration on article design:
+    </p>
+      <ul>
+        <li><a href="https://distill.pub/2019/memorization-in-rnns/">Visualizing memorization in RNNs</a></li>
+        <li><a href="https://distill.pub/2020/understanding-rl-vision/">Understanding RL Vision</a></li>
+      </ul>
+    <p>
+    </p>
+    <p>
+      
+    </p>
+    <p>
+
+    </p>
+    <p>
+      
+    </p>
+    <p>
+    </p>
+    <p>
+
+    </p>
+
+    <h3>Author Contributions</h3>
+    <p>
+      <b>Mary Olaleye</b> drafted most of the text, designed experiments and created the interactive visualizations in this article.
+      <b>Nick Baesso</b> and <b>Jaylen Edwards</b> extensively guided the overall direction of the article,
+      deliberated over the design and scope of experiments, provided much feedback on the interactive visualizations,
+      edited the text, and described improvements to make the article more accessible to readers.
+    </p>
+
+
+
+    <d-citation-list></d-citation-list>
+  </d-appendix>
+
+  <!-- bibliography will be inlined during Distill pipeline's pre-rendering -->
+  <d-bibliography src="bibliography.bib"></d-bibliography>
+
+<script type="text/javascript" src="index.bundle.js"></script></body>
+</html>
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+
+    Terms
+    Privacy
+    Security
+    Status
+    Docs
+    Contact GitHub
+    Pricing
+    API
+    Training
+    Blog
+    About
+
